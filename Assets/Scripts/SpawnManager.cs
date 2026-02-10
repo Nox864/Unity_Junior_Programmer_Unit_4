@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
@@ -25,5 +26,5 @@ public class SpawnManager : MonoBehaviour
         Vector3 randomSpawnPos = new Vector3(spawnPosZ, 0, spawnPosZ);
 
         return randomSpawnPos;
-    }
+    }    
 }
