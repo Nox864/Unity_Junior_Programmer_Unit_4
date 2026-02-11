@@ -20,5 +20,10 @@ public class Enemy : MonoBehaviour
         Vector3 playerDir = (player.transform.position - transform.position).normalized;
 
         rb.AddForce(playerDir * speed);
+
+        if (transform.position.y < -10)
+        {
+            Destroy(gameObject);
+        }
     }
 }
