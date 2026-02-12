@@ -3,11 +3,13 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    [SerializeField] private GameObject enemyPrefab;
+    [SerializeField] private GameObject[] enemyPrefab;
     [SerializeField] private GameObject powerup;
 
     [SerializeField] private int enemyCount;
     [SerializeField] private int waveNumber = 1;
+
+    private GameObject[] enemyInScene;
 
     private float spawnRangeX = 9.0f;
     private float spawnRangeZ = 9.0f;
@@ -22,7 +24,10 @@ public class SpawnManager : MonoBehaviour
 
     void Update()
     {
-        enemyCount = FindObjectsByType<Enemy>(FindObjectsSortMode.None).Length;
+        
+        enemyInScene = GameObject.FindGameObjectsWithTag("Enemy");
+        enemyCount = enemyInScene.Length;
+
 
         if (enemyCount == 0)
         {
@@ -40,9 +45,12 @@ public class SpawnManager : MonoBehaviour
 
     private void SpawnEnemyWave(int enemiesToSpawn)
     {
+        
         for (int i = 0; i < enemiesToSpawn; i++)
         {
-            Instantiate(enemyPrefab, GenerateSpawnPosition(), enemyPrefab.transform.rotation);
+            int randomEnemyIndex = Random.Range(0, enemyPrefab.Length);
+
+            Instantiate(enemyPrefab[randomEnemyIndex], GenerateSpawnPosition(), enemyPrefab[randomEnemyIndex].transform.rotation);
         }
     }
     private Vector3 GenerateSpawnPosition()

@@ -5,12 +5,18 @@ using UnityEngine.UIElements;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float speed;
-    [SerializeField] private bool hasPowerup = false;
+    [SerializeField] public bool hasPowerup = false;
+    [SerializeField] public bool hasMissile = false;
     [SerializeField] private float powerupStrngth;
     [SerializeField] GameObject powerupIndicator;
+    [SerializeField] GameObject missile;
+
+    private float missileSpeed = 25.0f;
 
     private Rigidbody rb;
     private Vector3 powerupIndicatorOffset = new Vector3(0, -0.6f, 0);
+
+
 
     void Start()
     {
@@ -46,6 +52,41 @@ public class PlayerController : MonoBehaviour
             StartCoroutine("PowerupCountdownRoutine");
             powerupIndicator.SetActive(true);
         }
+        if (other.CompareTag("PowerupMissile"))
+        {
+            hasMissile = true;
+            Destroy(other.gameObject);
+            powerupIndicator.SetActive(true);
+
+            
+            GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+
+            for (int i = 0; i < enemies.Length; i++)
+            {
+                
+                GameObject miss = Instantiate(missile, transform.position + Vector3.up, Quaternion.identity);
+
+                
+                Vector3 missileDir = (enemies[i].transform.position - transform.position).normalized;
+
+                
+                Rigidbody missileRb = miss.GetComponent<Rigidbody>();
+
+                if (missileRb != null)
+                {
+                    
+                    miss.transform.forward = missileDir;
+
+                    
+                    missileRb.AddForce(missileDir * missileSpeed, ForceMode.Impulse);
+                }
+
+                
+                Destroy(miss, 5f);
+            }
+
+            StartCoroutine("MissilePowerupCountdownRoutine");
+        }
     }
 
     IEnumerator PowerupCountdownRoutine()
@@ -54,6 +95,13 @@ public class PlayerController : MonoBehaviour
         hasPowerup = false;
         powerupIndicator.SetActive(false);
 
+    }
+
+    IEnumerator MissilePowerupCountdownRoutine()
+    {
+        yield return new WaitForSeconds(5);
+        hasMissile = false;
+        powerupIndicator.SetActive(false);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -65,7 +113,7 @@ public class PlayerController : MonoBehaviour
 
             enemyRb.AddForce(awayFromPlayer * powerupStrngth, ForceMode.Impulse);
 
-            Debug.Log($"Collided with: {collision.gameObject.name} with powerup set to {hasPowerup}");
+            
         }
     }
 }
